@@ -4,6 +4,65 @@ import os
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'bed'}
 
+def find_column( column_name, columns):
+    if column_name and isinstance(column_name, str):
+        try:
+            # Check if column_name can be converted to an integer (which would mean it's not a real column name)
+            return int(column_name)
+        except ValueError:
+            # Only proceed if it's truly a string (not an integer-like string)
+            try:
+                index = columns.index(column_name)  # Find the index
+                return index
+            except ValueError:
+                raise ValueError(f"Column '{column_name}' not found in header: {columns}")
+
+def process_stat_file_in_memory(file, annotation_id, sep, gene_column, stats_column, corected_stats_col, fold_change_col ):
+    conn = create_connection()
+    if conn:
+        cur = conn.cursor()
+        lines = file.stream
+        stats_data = []
+        first = True
+        for raw_line in lines:
+            line = raw_line.decode("utf-8")
+            parts = line.strip().split(sep)
+
+            if first:
+                first = False
+                stats_column = find_column(stats_column, parts)
+                gene_column = find_column(gene_column, parts)
+                corected_stats_col = find_column(corected_stats_col, parts)
+                fold_change_col = find_column(fold_change_col, parts)
+
+            if len(parts) >= 3:
+                gene  = parts[gene_column]
+                p_val = parts[stats_column]
+                p_cor = parts[corected_stats_col] if parts[corected_stats_col] else None
+                foldc = parts[fold_change_col] if parts[fold_change_col] else None
+                stats_data.append([annotation_id, p_val, p_cor, foldc, gene ])
+        if len(stats_data) == 0:
+            raise ValueError( f"I got no data from the table - are these settings correct: sep {sep}, "
+                f"stats_column {stats_column}, gene_column {gene_column}, corected_stats_col {corected_stats_col},"
+                f" fold_change_col {fold_change_col}"
+            )
+        try:
+            cur.executemany(
+                """
+                INSERT INTO stats (gene_id, annotation_id, p_val, p_corr, foldc)
+                SELECT id, ?, ?, ?, ?
+                FROM genes WHERE gene_name = ?
+                """,
+                stats_data
+            )
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            raise ValueError( f"I got a database error: {e}")
+        return True
+    return False
+
+
 def process_bed_file_in_memory(file, experiment_id):
     conn = create_connection()
     if conn:
@@ -32,7 +91,7 @@ def process_bed_file_in_memory(file, experiment_id):
             conn.commit()
             conn.close()
         except Exception as e:
-            raise ValueError( f"I got a databse error: {e}")
+            raise ValueError( f"I got a database error: {e}")
         return True
     return False
 

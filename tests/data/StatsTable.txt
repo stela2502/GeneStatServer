@@ -1,0 +1,3 @@
+Gene Symbol;P Values;Corr P Values;FC
+Rag1;0.00034;0.1;2
+Igkc;34e-8;0.0034;5

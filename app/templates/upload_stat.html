@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiment Overview - STAT Upload</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 80vh;
+        }
+
+        .left-section, .right-section {
+            height: 100%;
+            overflow: auto;
+        }
+
+        .left-section {
+            width: 60%;
+        }
+
+        .right-section {
+            width: 35%;
+            padding-left: 20px;
+            border-left: 2px solid #ddd;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+
+        th, td { 
+            border: 1px solid black; 
+            padding: 8px; 
+            text-align: left; 
+        }
+
+        th { 
+            background-color: #f2f2f2; 
+        }
+
+        .error { 
+            color: red; 
+            font-weight: bold; 
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input, select, textarea, button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            {% if error_message %}
+                <p class="error">Error: {{ error_message }}</p>
+            {% endif %}
+            
+            <h3>Stats Tables Interface</h3>
+            <p> Here you can upload stats tables. Gene symbols need to match between your gft's gene names and the Stats Tables.</p>
+            <p> For each Stat table you need to state which columns do contain the Gene Symbol, p value, corrected p value and fold chane values. The server does not care which data you give it as long as at least Gene Symbol and P value columns are defined.</p>
+            <p> in addition you can upload only text files using any separation string you want. But You need to state which one will be used in the file. The server will not try to use any by itself.</p>
+            <p> Last whichever columns contained the values we collect here - tey will be reported back as "P Value", "Corrected P Value" and "Stats Fold Change" </p>
+
+            <hr>
+
+            <h3>Add Stats to your data analysis</h3>
+
+            <p> Here you can select one of the available stats tables and add this information to the BED/GTF data - similarily to the <bf>Identify genes close to the bed entries</bf> functionality: </p>
+            <form action="/stats/get" method="post" enctype="application/x-www-form-urlencoded">
+            <!-- Select Existing Annotation -->
+            <label for="annotation_id">Select an Existing Annotation:</label>
+            <select id="annotation_id" name="annotation_id" required>
+                <option value="" disabled selected>Select an annotation</option>
+                {% for annotation in annotations %}
+                    <option value="{{ annotation[0] }}">{{ annotation[1] }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" id="distance" name="distance" placeholder="Distance to gene start in bp" required min="1">
+            <input type="number" id="p_val_threshold" name="p_val_threshold" placeholder="P value threshold" required min="1">
+            
+                <button type="submit">Download Stats Table</button>
+            </form>
+
+        </div>
+
+        <div class="right-section">
+            <h2>Upload STAT File</h2>
+
+            {% if form_error %}
+                <p class="error">Error: {{ form_error }}</p>
+            {% endif %}
+
+            <div class="form-container">
+            <!-- Annotation Section -->
+            <p>First create a new annotation:</p>
+            <form action="/stats/upload" method="POST" enctype="multipart/form-data">
+
+                <input type="text" id="new_annotation_name" name="new_annotation_name" placeholder="New Annotation Name" 
+                   value="{{ new_annotation_name if new_annotation_name else '' }}" required>
+
+                <textarea id="new_annotation_description" name="new_annotation_description" placeholder="Annotation Description">{{ new_annotation_description if new_annotation_description else '' }}</textarea>
+
+                <!-- Separation Line -->
+                <hr>
+                <p>And here we need the column names for the respective columns in our database. We also accept the column ids (starting with 1).</p>
+                <!-- Column Fields Section -->
+                <div class="column-fields"> 
+                    <label for="gene_column">Gene Column Name:</label>
+                    <input type="text" id="gene_column" name="gene_column" placeholder="Enter the Gene Column Name" 
+                           value="{{ gene_column if gene_column else '' }}" required>
+
+                    <label for="stats_column">Stats Column Name:</label>
+                    <input type="text" id="stats_column" name="stats_column" placeholder="Enter the Stats Column Name" 
+                           value="{{ stats_column if stats_column else '' }}" required>
+
+                    <label for="corected_stats_col">Corrected Stats Column Name:</label>
+                    <input type="text" id="corected_stats_col" name="corected_stats_col" placeholder="Enter Corrected Stats Column Name" 
+                           value="{{ corrected_stats_col if corrected_stats_col else '' }}">
+
+                    <label for="fold_change_col">Fold Change Column Name:</label>
+                    <input type="text" id="fold_change_col" name="fold_change_col" placeholder="Enter Fold Change Column Name" 
+                           value="{{ fold_change_col if fold_change_col else '' }}">
+                </div>
+
+                <!-- Separation Line -->
+                <hr>
+                <!-- File Upload Section -->
+                <p>And last please select the file and give me the column separation string:</p>
+                <div class="column-fields">
+                    <label for="sep">The col separation string:</label>
+                    <input type="text" id="sep" name="separator" placeholder="The column separator - something like \t , ;" 
+                           value="{{ separator if separator else '' }}" required>
+                </div>
+                <label for="file">Upload Stats File (CSV or TSV or TXT):</label>
+                <input type="file" name="file" accept=".txt,.csv,.tsv" required>
+
+                <!-- Submit Button -->
+                <button type="submit">Upload Stats Table</button>
+            </form>
+
+        </div>
+        </div>
+    </div>
+</body>
+</html>

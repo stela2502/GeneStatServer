@@ -43,6 +43,29 @@ CREATE TABLE bed (
     FOREIGN KEY (experiment_id) REFERENCES experiments(id)
 );
 
+-- Create the 'annotation' table
+CREATE TABLE IF NOT EXISTS annotation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,             -- Unique ID for each BED entry
+    annotation_name VARCHAR(20) UNIQUE,  -- Example field: Name of the annotation
+    description TEXT               -- Example field: Description of the annotation
+);
+
+-- Create the 'stats' table
+CREATE TABLE IF NOT EXISTS stats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,      -- Unique identifier for each record
+    gene_id INTEGER,                           -- Reference to 'genes' table
+    annotation_id INTEGER,                     -- Reference to 'annotation' table
+    p_val REAL,                                -- p-value
+    p_corr REAL,                               -- corrected p-value
+    foldc REAL,                                -- fold change
+    FOREIGN KEY (gene_id) REFERENCES genes(id),        -- Foreign key to 'genes'
+    FOREIGN KEY (annotation_id) REFERENCES annotation(id)  -- Foreign key to 'annotation'
+);
+
+-- Create indexes on 'stats' table for faster lookups (especially useful for large tables)
+CREATE INDEX IF NOT EXISTS idx_gene_id ON stats(gene_id);
+CREATE INDEX IF NOT EXISTS idx_annotation_id ON stats(annotation_id);
+
 /*
 
 CREATE OR REPLACE FUNCTION get_genes_near_peaks( dist INT)
