@@ -80,7 +80,7 @@
 
             <hr>
 
-            <h3>Add Stats to your data analysis</h3>
+            <h3>Download Your Data Including Stats</h3>
 
             <p> Here you can select one of the available stats tables and add this information to the BED/GTF data - similarily to the <bf>Identify genes close to the bed entries</bf> functionality: </p>
             <form action="/stats/get" method="post" enctype="application/x-www-form-urlencoded">
@@ -93,7 +93,7 @@
                 {% endfor %}
             </select>
             <input type="number" id="distance" name="distance" placeholder="Distance to gene start in bp" required min="1">
-            <input type="number" id="p_val_threshold" name="p_val_threshold" placeholder="P value threshold" required min="1">
+            <input type="number" id="p_val_threshold" name="p_val_threshold" placeholder="P value threshold" required min="0" step="any">
             
                 <button type="submit">Download Stats Table</button>
             </form>
