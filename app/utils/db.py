@@ -2,9 +2,12 @@ import os
 import sqlite3
 
 def create_connection():
-    pgdata_path = os.getenv("PGDATA")
-    if not pgdata_path:
-        raise ValueError("PGDATA environment variable is not set!")
+    db_path = os.getenv("SQLITE_DB")
+
+    if not db_path:
+        raise ValueError("SQLITE_DB environment variable is not set!")
+    
+    pgdata_path = os.path.abspath(db_path)
 
     if not os.path.exists(pgdata_path):
         try:
@@ -12,8 +15,6 @@ def create_connection():
         except OSError as e:
             raise RuntimeError(f"Failed to create directory {pgdata_path}: {e}")
     
-    db_path = os.path.join(pgdata_path, "genome.db")
-
     # Try to open the database file
     try:
         # If the database does not exist, create it and initialize it

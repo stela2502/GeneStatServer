@@ -9,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 
 # Define the test database path
 TEST_DATABASE_PATH = './tests/data/'
-os.environ['PGDATA'] = TEST_DATABASE_PATH
+os.environ['SQLITE_DB'] = TEST_DATABASE_PATH
 
 @pytest.fixture(scope='module')
 def app():
@@ -24,7 +24,7 @@ def app():
             raise RuntimeError(f"Failed to remove existing database at {db_path}: {e}")
 
 
-    # Set the database file for testing (PGDATA logic is handled in your function)
+    # Set the database file for testing (SQLITE_DB logic is handled in your function)
     
 
     # Create the app instance
@@ -68,12 +68,12 @@ def test_database_tables_exist():
 def client(app):
     """Returns a test client for making requests"""
 
-    # Set the PGDATA variable if it's not already set
-    os.environ['PGDATA'] = os.getenv('PGDATA', TEST_DATABASE_PATH)
+    # Set the SQLITE_DB variable if it's not already set
+    os.environ['SQLITE_DB'] = os.getenv('SQLITE_DB', TEST_DATABASE_PATH)
 
     # Ensure the database directory is valid
-    if not os.path.isdir(os.environ['PGDATA']):
-        raise TestSetupError(f"Invalid PGDATA directory: {os.environ['PGDATA']}. Please check the path to the test database.")
+    if not os.path.isdir(os.environ['SQLITE_DB']):
+        raise TestSetupError(f"Invalid SQLITE_DB directory: {os.environ['SQLITE_DB']}. Please check the path to the test database.")
 
     # Ensure the app is passed properly
     if not app:

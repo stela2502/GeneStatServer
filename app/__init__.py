@@ -14,5 +14,4 @@ app.register_blueprint(upload_bed_bp)
 app.register_blueprint(upload_gtf_bp)
 app.register_blueprint(get_genes_bp)
 app.register_blueprint(upload_stat_bp)
-if __name__ == "__main__":
-    app.run(debug=True)
+

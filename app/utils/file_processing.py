@@ -112,11 +112,11 @@ def load_gtf_to_postgres(gtf_file):
     cur.execute(f"INSERT INTO info (info) VALUES ('gene info from {gtf_file.filename}');")
     conn.commit()
 
-    pgdata_path = os.getenv("PGDATA")
+    pgdata_path = os.getenv("SQLITE_DB")
     if pgdata_path:
-        print(f"PGDATA is set to: {pgdata_path}")
+        print(f"SQLITE_DB is set to: {pgdata_path}")
     else:
-        print("PGDATA is not set.")
+        print("SQLITE_DB is not set.")
 
     temp_sql_path = os.path.join(pgdata_path, "temp_import.sql")
     gene_id_counter = 1  # Start counting genes from 1
