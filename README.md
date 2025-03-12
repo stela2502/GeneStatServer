@@ -23,7 +23,7 @@ pip install GeneStatsServer
 The package will start a Flask based server to interact with the database. The server will both create the path and the database file is not existing. Start from an not existing file!
 
 ```
-GeneStatsServer /path/to/your/database.db
+GeneStatsServer --db-file /path/to/your/database.db
 ```
 
 I hope the web interface is kind of self explanatory. Let's see if I get questions.

@@ -9,18 +9,20 @@ def main():
     parser.add_argument(
         '--db-file',
         type=str,
-        required=True,
+        required=False,
         help="Path to the database file"
     )
 
     # Parse the arguments and store them in `args`
     args = parser.parse_args()
 
-    # Now you can access the database file path from the parsed arguments
-    print(f"Using database: {args.db_file}")
+    db_file = args.db_file or os.getenv('SQLITE_DB')
 
-    # Set the environment variable for the database file
-    os.environ['SQLITE_DB'] = args.db_file
+    if not db_file:
+        raise ValueError("usage: GeneStatsServer --db-file /path/to/your/database or set the SQLITE_DB environment variable")
+
+    # Now you can access the database file path from the parsed arguments
+    print(f"Using database: {db_file}")
 
     # Start the Flask app
     app.run(debug=True)
