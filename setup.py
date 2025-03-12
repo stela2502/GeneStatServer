@@ -8,7 +8,7 @@ print(long_description)  # Add this to setup.py temporarily and run it
 
 setup(
     name="GeneStatsServer",
-    version="1.0",
+    version="0.4.0",
     packages=find_packages(include=["GeneStatsServer", "GeneStatsServer.*"]),  # ✅ Include all submodules
     install_requires=[
         "Flask",  # or whatever your dependencies are
@@ -27,4 +27,12 @@ setup(
             "GeneStatsServer = GeneStatsServer.main:main",
         ],
     },
+    author="Stefan Lang",
+    author_email="Stefan.Lang@med.lu.se",
+    url="https://github.com/stela2502/GeneStatServer",  # Your GitHub URL
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+    ],
 )
