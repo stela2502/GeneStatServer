@@ -18,6 +18,8 @@ def main():
 
     db_file = args.db_file or os.getenv('SQLITE_DB')
 
+    os.environ['SQLITE_DB'] = db_file
+
     if not db_file:
         raise ValueError("usage: GeneStatsServer --db-file /path/to/your/database or set the SQLITE_DB environment variable")
 

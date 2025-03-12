@@ -1,19 +1,19 @@
 -- Table for storing experiments (e.g., ChIP-seq experiments)
 
-CREATE TABLE experiments (
+CREATE TABLE IF NOT EXISTS experiments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,              -- Experiment ID
     experiment_name TEXT NOT NULL,       -- Name of the experiment (e.g., "ChIP-seq experiment 1")
     description TEXT                    -- Description of the experiment
 );
 
-CREATE Table info (
+CREATE Table IF NOT EXISTS info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,              -- info ID
     info TEXT
 );
 
 
 -- Table for storing genes
-CREATE TABLE genes (
+CREATE TABLE IF NOT EXISTS genes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,              -- Gene ID
     gene_name TEXT NOT NULL,            -- Gene name (e.g., "BRCA1")
     chromosome TEXT NOT NULL,           -- Chromosome where the gene is located
@@ -22,7 +22,7 @@ CREATE TABLE genes (
 );
 
 -- Table for storing transcripts (linked to genes, with alternative start and stop positions)
-CREATE TABLE transcripts (
+CREATE TABLE IF NOT EXISTS transcripts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,              -- Transcript ID (for different isoforms)
     gene_id INT NOT NULL,               -- Foreign key linking to genes table
     transcript_name TEXT NOT NULL,      -- Name of the transcript (e.g., "BRCA1_Transcript_1")
@@ -32,7 +32,7 @@ CREATE TABLE transcripts (
 );
 
 -- Table for storing BED data (linking to experiments)
-CREATE TABLE bed (
+CREATE TABLE IF NOT EXISTS bed (
     id INTEGER PRIMARY KEY AUTOINCREMENT,             -- Unique ID for each BED entry
     experiment_id INT NOT NULL,         -- Foreign key linking to experiments
     chromosome TEXT NOT NULL,           -- Chromosome where the peak is located
