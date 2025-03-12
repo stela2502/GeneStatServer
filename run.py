@@ -1,7 +1,7 @@
 import argparse
 import os
 import sys
-from app import app  # Assuming your Flask app is in 'app.py'
+from GeneStatsServer import app  # Assuming your Flask app is in 'app.py'
 
 
 def set_pgdata_for_testing():

@@ -7,7 +7,7 @@ def create_connection():
     if not db_path:
         raise ValueError("SQLITE_DB environment variable is not set!")
     
-    pgdata_path = os.path.abspath(db_path)
+    pgdata_path = os.path.dirname(os.path.abspath(db_path))
 
     if not os.path.exists(pgdata_path):
         try:
@@ -24,7 +24,7 @@ def create_connection():
 
             # Define the path to the schema.sql file
             sql_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-             "..", "..", 'migrations', 'schema.sql') )
+             "..", 'migrations', 'schema.sql') )
             
             # Check if the schema file exists before trying to open it
             if not os.path.exists(sql_file_path):
