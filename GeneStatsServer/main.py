@@ -27,7 +27,7 @@ def main():
     print(f"Using database: {db_file}")
 
     # Start the Flask app
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=False)
 
 if __name__ == "__main__":
     main()
