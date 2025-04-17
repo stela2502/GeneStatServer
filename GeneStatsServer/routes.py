@@ -42,7 +42,7 @@ def index():
         conn.close()
 
         peaks_info = {}
-        if not peaks_per_experiment:
+        if not peaks_per_experiment and not genome_version == "Nothing":
             error_message += "Please upload your BED data"
 
         for exp_id, peak_count in peaks_per_experiment:
