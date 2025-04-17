@@ -42,6 +42,9 @@ def index():
         conn.close()
 
         peaks_info = {}
+        if not peaks_per_experiment:
+            error_message += "Please upload your BED data"
+
         for exp_id, peak_count in peaks_per_experiment:
             exp_name = experiment_dict.get(exp_id, "Unknown Experiment")
             peaks_info[exp_name] = peak_count 

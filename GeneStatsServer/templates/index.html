@@ -63,6 +63,43 @@
             margin: 8px 0;
             padding: 8px;
         }
+        #overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(255, 255, 255, 0.6); /* translucent white */
+          z-index: 9999; /* on top of everything */
+          pointer-events: all; /* actually block clicks */
+        }
+
+        .interaction-wrapper {
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7); /* White with transparency */
+            z-index: 10;
+            pointer-events: all; /* Prevent clicks */
+        }
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #444;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
     </style>
 </head>
 <body>
@@ -76,6 +113,8 @@
             {% if error_message %}
                 <p class="error">Error: {{ error_message }}</p>
             {% endif %}
+            {% set disable_bed_form = 'Please upload your GTF file.' in error_message %}
+            {% set disable_analysis_form = 'Please upload your BED data' in error_message or disable_bed_form %}
 
             {% if genome_version == "Nothing" %}
                 <h2>Upload GTF File</h2>
@@ -109,33 +148,42 @@
 
         <!-- Right section for forms -->
         <div class="right-section">
-            <h2>Upload BED File</h2>
-            <form action="/upload_bed" method="post" enctype="multipart/form-data">
-                <label for="experiment">Select an Experiment:</label>
-                <select name="experiment_id" id="experiment">
-                    {% for experiment in experiments %}
-                    <option value="{{ experiment.id }}">{{ experiment.experiment_name }}</option>
-                    {% endfor %}
-                </select>
-                
-                <p>Or create a new experiment:</p>
-                <input type="text" name="new_experiment_name" placeholder="New Experiment Name">
-                <textarea name="new_experiment_description" placeholder="Experiment Description"></textarea>
-                
-                <input type="file" name="file" accept=".bed">
-                <button type="submit">Upload</button>
-            </form>
+            <div class="interaction-wrapper">
+                {% if disable_bed_form %}
+                    <div class="overlay"></div>
+                {% endif %}
+                <h2>Upload BED File</h2>
+                <form action="/upload_bed" method="post" enctype="multipart/form-data">
+                    <label for="experiment">Select an Experiment:</label>
+                    <select name="experiment_id" id="experiment">
+                        {% for experiment in experiments %}
+                        <option value="{{ experiment.id }}">{{ experiment.experiment_name }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <p>Or create a new experiment:</p>
+                    <input type="text" name="new_experiment_name" placeholder="New Experiment Name">
+                    <textarea name="new_experiment_description" placeholder="Experiment Description"></textarea>
+                    
+                    <input type="file" name="file" accept=".bed">
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+            <div class="interaction-wrapper">
+                {% if disable_analysis_form %}
+                    <div class="overlay"></div>
+                {% endif %}
+                <h2>Or - Identify genes close to the bed entries</h2>
+                <p>Please select the maximum distance between the bed entries (peaks) and the transcription start point of the gene(s) in base pairs:</p>
+                <form action="/get_genes" method="post" enctype="application/x-www-form-urlencoded">
+                    <input type="number" name="distance" placeholder="Distance to gene start in bp" required min="1">
+                    <button type="submit">Download</button>
+                </form>
 
-            <h2>Or - Identify genes close to the bed entries</h2>
-            <p>Please select the maximum distance between the bed entries (peaks) and the transcription start point of the gene(s) in base pairs:</p>
-            <form action="/get_genes" method="post" enctype="application/x-www-form-urlencoded">
-                <input type="number" name="distance" placeholder="Distance to gene start in bp" required min="1">
-                <button type="submit">Download</button>
-            </form>
-
-            <a href="/stats">
-                <h2>Or - Add Stats Tables to the Results</h2>
-            </a>
+                <a href="/stats">
+                    <h2>Or - Add Stats Tables to the Results</h2>
+                </a>
+            </div>
         </div>
     </div>
 </body>
